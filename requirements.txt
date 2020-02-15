@@ -2,3 +2,5 @@ mysqlclient==1.4.6
 Django==2.1.9
 djangorestframework==3.11.0
 Jinja2==2.11.1
+celery==4.4.0
+redis==3.4.1

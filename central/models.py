@@ -11,11 +11,11 @@ class Notification(models.Model):
         verbose_name_plural = 'Notifications'
 
     owner = models.ForeignKey(User, verbose_name='Owner', on_delete=models.CASCADE, null=False, blank=False,
-                              related_name='owner')
+                              related_name='notification')
     title = models.CharField(verbose_name='Title', max_length=128, blank=True, null=True)
     description = models.TextField(verbose_name='Description', blank=True, null=True)
     place = GeometryField(verbose_name='Place', geography=True, blank=True, null=True)
-    participants = models.ManyToManyField(User, verbose_name='Participants', related_name='participants',
+    participants = models.ManyToManyField(User, verbose_name='Participants', related_name='notifications',
                                           blank=True, null=True)
     created_at = models.DateTimeField(verbose_name='Created at', auto_now_add=True)
     activation_time = models.DateTimeField(verbose_name='Activation time', blank=False, null=False)

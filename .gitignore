@@ -1,2 +1,4 @@
 .idea
 venv
+celery.logs
+dump.rdb
