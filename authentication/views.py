@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -43,3 +43,10 @@ class ProfileAPIView(RetrieveAPIView):
 
     def get_object(self):
         return self.queryset.get(pk=self.request.user.pk)
+
+
+class AllUsersAPIView(ListAPIView):
+
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated, ]
