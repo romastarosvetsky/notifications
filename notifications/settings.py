@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+from envs import env
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -83,9 +85,11 @@ WSGI_APPLICATION = 'notifications.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': '/home/roman/PycharmProjects/notifications/my.cnf',
-        },
+        'NAME': env('MYSQL_DATABASE', default='notifications'),
+        'USER': env('MYSQL_USER', default='mysql'),
+        'PASSWORD': env('MYSQL_PASSWORD', default='123123'),
+        'HOST': env('MYSQL_HOST', default='127.0.0.1'),
+        'PORT': env('MYSQL_PORT', '3306')
     }
 }
 
@@ -137,8 +141,8 @@ REST_FRAMEWORK = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = True
 
 CELERY_IMPORTS = (

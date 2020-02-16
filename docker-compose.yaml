@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    entrypoint: ['sh', '/entrypoint.sh']
+    environment:
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_HOST: "${MYSQL_HOST}"
+      MYSQL_PORT: "${MYSQL_PORT}"
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PORT: "${REDIS_PORT}"
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    links:
+      - "db:${MYSQL_HOST}"
+      - "redis:${REDIS_HOST}"
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+    ports:
+      - '${MYSQL_PORT}:3306'
+    expose:
+      - '${MYSQL_PORT}'
+  worker:
+    build: .
+    command: celery -A notifications worker -l info -f celery.logs
+    environment:
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_HOST: "${MYSQL_HOST}"
+      MYSQL_PORT: "${MYSQL_PORT}"
+      EMAIL_HOST_USER:  "${EMAIL_HOST_USER}"
+      EMAIL_HOST_PASSWORD: "${EMAIL_HOST_PASSWORD}"
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PORT: "${REDIS_PORT}"
+    links:
+      - "redis:${REDIS_HOST}"
+      - "db:${MYSQL_HOST}"
+
