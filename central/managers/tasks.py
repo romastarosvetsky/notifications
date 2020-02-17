@@ -12,13 +12,13 @@ def configure_existing_notifications(sender, *args, **kwargs):
 
 
 @celery_app.task
-def send_notification(notification_id):
-    Notifier().send_notification(notification_id)
+def send_notification(notification_id, activation_time):
+    Notifier().send_notification(notification_id, activation_time)
 
 
 @celery_app.task
 def create_notification_tasks_on_startup():
     notifications = Notifier.get_not_sent_notifications()
     for pk, activation_time in notifications:
-        send_notification.apply_async(args=[pk], eta=activation_time)
+        send_notification.apply_async(args=[pk, activation_time], eta=activation_time)
 
