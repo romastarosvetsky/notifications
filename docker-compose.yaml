@@ -20,6 +20,8 @@ services:
     links:
       - "db:${MYSQL_HOST}"
       - "redis:${REDIS_HOST}"
+    depends_on:
+      - db
   redis:
     image: "redis:alpine"
     ports:
@@ -31,6 +33,7 @@ services:
       MYSQL_DATABASE: "${MYSQL_DATABASE}"
       MYSQL_USER: "${MYSQL_USER}"
       MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
     ports:
       - '${MYSQL_PORT}:3306'
     expose:
