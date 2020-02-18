@@ -54,4 +54,7 @@ services:
     links:
       - "redis:${REDIS_HOST}"
       - "db:${MYSQL_HOST}"
+    depends_on:
+      - db
+      - web
 
