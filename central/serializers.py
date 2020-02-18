@@ -1,7 +1,9 @@
+from django.utils import timezone
 from rest_framework import serializers
 
 from authentication.models import User
 from authentication.serializers import UserSerializer
+from central.managers import tasks
 from central.models import Notification
 
 
@@ -34,6 +36,7 @@ class NotificationSerializer(serializers.ModelSerializer):
         notification.save()
         participants = User.objects.filter(pk__in=[d['pk'] for d in participants_pk])
         notification.participants.add(*participants)
+        self._create_send_task(notification.pk)
         return notification
 
     def update(self, instance, validated_data):
@@ -44,4 +47,12 @@ class NotificationSerializer(serializers.ModelSerializer):
         notification = notification_qs.first()
         notification.participants.clear()
         notification.participants.add(*participants)
+        self._create_send_task(notification.pk)
         return notification
+
+    @staticmethod
+    def _create_send_task(notification_id):
+        notification = Notification.objects.filter(pk=notification_id).values('pk', 'activation_time', 'sent').first()
+        if notification is not None and notification['activation_time'] >= timezone.now() and not notification['sent']:
+            tasks.send_notification.apply_async(args=[notification['pk'], notification['activation_time']],
+                                                eta=notification['activation_time'])
