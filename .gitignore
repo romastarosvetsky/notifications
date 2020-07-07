@@ -2,3 +2,4 @@
 venv
 celery.logs
 dump.rdb
+*__pycache__*
